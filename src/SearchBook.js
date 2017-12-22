@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
 import Book from './Book'
+import { debounce } from 'underscore'
 
 
 
@@ -11,17 +12,41 @@ class SearchBook extends Component {
     bookSearch : []
   }
 
+  constructor(props) {
+    super(props);
+    this.fetchBooks = debounce(this.fetchBooks,500);
+  }
+
+  fetchBooks = () => {
+    if(this.state.query.length > 0){
+      BooksAPI.search(this.state.query).then((bookSearch) => {
+          this.setState({ bookSearch })
+      }).catch(() => {
+        this.setState({ bookSearch: [] })
+      })
+    } else {
+      this.setState({ bookSearch: [] })
+    }
+  }
+
   updateQuery = (query) => {
-    this.setState({ query: query })
+    this.setState({ query: query.trim() })
+    this.fetchBooks()
   }
 
   clearQuery = () => {
     this.setState({query: ''})
   }
 
+  componentDidMount() {
+    this.setState({pesquisarLivros : debounce(this.fetchBooks(), 1000)})
+  }
+
 
   render () {
-    const { bookSearch } = this.state
+    const { bookSearch, query } = this.state
+
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -38,7 +63,12 @@ class SearchBook extends Component {
               However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
               you don't find a specific author or title. Every search is limited by search terms.
             */}
-            <input type="text" placeholder="Search by title or author"/>
+            <input
+              type="text"
+              placeholder="Search by title or author"
+              value={query}
+              onChange={(event) => this.updateQuery(event.target.value)}
+            />
 
           </div>
         </div>

@@ -23,7 +23,7 @@ class Book extends Component {
           </div>
         </div>
         <div className="book-title">{book.title}</div>
-        <div className="book-authors">{book.authors.length === 1? book.authors[0]: book.authors.map((b,index,book) => { return b + (index < book.length-1 ? ', ': '')})}</div>
+        <div className="book-authors">{book.authors != null && book.authors.length === 1? book.authors[0]: book.authors != null && book.authors.map((b,index,book) => { return b + (index < book.length-1 ? ', ': '')})}</div>
       </div>
     )
   }
