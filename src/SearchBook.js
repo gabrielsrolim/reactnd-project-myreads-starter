@@ -42,6 +42,12 @@ class SearchBook extends Component {
     this.setState({pesquisarLivros : debounce(this.fetchBooks(), 1000)})
   }
 
+  bookChangeShelf = (book, shelf) => {
+    BooksAPI.update(book, shelf).then((result) => {
+      this.fetchBooks()
+    })
+  }
+
 
   render () {
     const { bookSearch, query } = this.state
@@ -77,7 +83,7 @@ class SearchBook extends Component {
           {
             bookSearch.map((b) =>
               <li key={b.id}>
-                <Book book={b} />
+                <Book book={b} bookChangeShelf={ this.bookChangeShelf }/>
               </li>
             )
           }
