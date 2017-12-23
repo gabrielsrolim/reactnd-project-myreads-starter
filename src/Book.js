@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 
 class Book extends Component {
 
-  change = (event) => {
+  changeOptionShelf = (event) => {
     const { book,bookChangeShelf } = this.props
     bookChangeShelf(book,event.target.value)
   };
@@ -16,7 +16,7 @@ class Book extends Component {
         <div className="book-top">
           <div className="book-cover" style={{ width: 128, height: 192, backgroundImage: `url("${book.imageLinks.thumbnail}")` }}></div>
           <div className="book-shelf-changer">
-            <select value={book.shelf == null ? "none" : book.shelf} onChange={ this.change } >
+            <select value={book.shelf == null ? "none" : book.shelf} onChange={ this.changeOptionShelf } >
               <option value="disable" disabled>Move to...</option>
               <option value="currentlyReading">Currently Reading</option>
               <option value="wantToRead">Want to Read</option>
