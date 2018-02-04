@@ -9,19 +9,42 @@ import { debounce } from 'underscore'
 class SearchBook extends Component {
   state = {
     query: '',
-    bookSearch : []
+    bookSearch : [],
+    booksUser : null,//shelf
   }
+
+
 
   constructor(props) {
     super(props);
-    this.fetchBooks = debounce(this.fetchBooks,500);
+    this.searchBooks = debounce(this.searchBooks,500);
   }
 
-  fetchBooks = () => {
+  searchBooks = () => {
     if(this.state.query.length > 0){
       BooksAPI.search(this.state.query).then((bookSearch) => {
-          this.setState({ bookSearch })
-      }).catch(() => {
+          if(bookSearch.error) {
+              this.setState({ bookSearch: [] })
+          } else {
+              if(this.state.booksUser){
+                var books = this.state.booksUser
+                bookSearch = bookSearch.map((bs) =>{
+                  var bookNaStante = books.find((bu) => bu.id === bs.id)
+                  if(bookNaStante){
+                    console.log(bookNaStante);
+                    return bookNaStante;
+                  } else {
+                    return bs;
+                  }
+                })
+              }
+
+              this.setState({ bookSearch })
+
+
+          }
+
+      }).catch((error) => {
         this.setState({ bookSearch: [] })
       })
     } else {
@@ -31,7 +54,7 @@ class SearchBook extends Component {
 
   updateQuery = (query) => {
     this.setState({ query: query.trim() })
-    this.fetchBooks()
+    this.searchBooks()
   }
 
   clearQuery = () => {
@@ -39,12 +62,21 @@ class SearchBook extends Component {
   }
 
   componentDidMount() {
-    this.setState({pesquisarLivros : debounce(this.fetchBooks(), 1000)})
+    this.fechAllBooks()
+    this.setState({pesquisarLivros : debounce(this.searchBooks(), 1000)})
+  }
+
+  fechAllBooks = () => {
+    BooksAPI.getAll().then((booksUser) => {
+
+      this.setState( { booksUser } )
+    })
   }
 
   bookChangeShelf = (book, shelf) => {
     BooksAPI.update(book, shelf).then((result) => {
-      this.fetchBooks()
+      this.fechAllBooks()
+      this.searchBooks()
     })
   }
 
