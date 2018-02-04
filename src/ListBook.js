@@ -7,9 +7,7 @@ import BookShelf from './BookShelf'
 class ListBook extends Component {
 
   state = {
-    booksCurrentRead: [],
-    booksWantRead: [],
-    booksRead: [],
+    books : [],
   }
 
   componentDidMount() {
@@ -18,12 +16,7 @@ class ListBook extends Component {
 
   fechAllBooks = () => {
     BooksAPI.getAll().then((books) => {
-
-      let booksCurrentRead = books.filter((b) =>b.shelf === 'currentlyReading')
-      let booksWantRead = books.filter((b) =>b.shelf === 'wantToRead')
-      let booksRead = books.filter((b) =>b.shelf === 'read')
-
-      this.setState( { booksCurrentRead, booksWantRead, booksRead } )
+      this.setState( { books } )
     })
   }
 
@@ -37,6 +30,9 @@ class ListBook extends Component {
 
   render () {
     const { title } = this.props
+    const { books } = this.state
+
+    console.log(books);
 
     return (
       <div className="list-books">
@@ -45,9 +41,9 @@ class ListBook extends Component {
         </div>
         <div className="list-books-content">
           <div>
-            <BookShelf books={ this.state.booksCurrentRead } title="Currently Reading" bookChangeShelf={ this.bookChangeShelf }/>
-            <BookShelf books={ this.state.booksWantRead } title="Want to Read" bookChangeShelf={ this.bookChangeShelf }/>
-            <BookShelf books={ this.state.booksRead } title="Read" bookChangeShelf={ this.bookChangeShelf }/>
+            <BookShelf books={ books.filter((b) =>b.shelf === 'currentlyReading') } title="Currently Reading" bookChangeShelf={ this.bookChangeShelf }/>
+            <BookShelf books={ books.filter((b) =>b.shelf === 'wantToRead') } title="Want to Read" bookChangeShelf={ this.bookChangeShelf }/>
+            <BookShelf books={ books.filter((b) =>b.shelf === 'read') } title="Read" bookChangeShelf={ this.bookChangeShelf }/>
           </div>
         </div>
         <div className="open-search">
